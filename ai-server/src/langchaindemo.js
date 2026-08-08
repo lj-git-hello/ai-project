@@ -14,7 +14,7 @@ import { MultiServerMCPClient } from "@langchain/mcp-adapters"
 import { mcpConfig } from "./mcpConfig.js"
 import { app as workFlow } from "./langgraph.js"
 import { initRAG, searchDocs } from "./rag/init.js"
-import { PORT, IS_PROD, LLM_BASE_URL, CHAT_MODEL, LLM_API_KEY } from "./config.js"
+import { PORT, IS_PROD } from "./config.js"
 
 const app = express()
 app.use(express.json())
@@ -207,15 +207,6 @@ async function chatTo(q, userId, sessionId, res, type = "human", files = []) {
 // 健康检查端点（Render 部署探活用，不依赖外部服务）
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() })
-})
-
-// 临时诊断端点：查看当前对话模型配置（不暴露 key），排查 429 用
-app.get('/debug/llm-config', (req, res) => {
-  res.json({
-    LLM_BASE_URL: LLM_BASE_URL,
-    CHAT_MODEL: CHAT_MODEL,
-    LLM_API_KEY_set: !!LLM_API_KEY
-  })
 })
 
 app.get('/llm', async (req, res) => {
