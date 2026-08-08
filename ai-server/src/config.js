@@ -28,11 +28,11 @@ function requireEnv(key, fallback) {
 /* ===== 对话模型：火山引擎方舟（OpenAI 兼容协议） ===== */
 /** 火山引擎 API Key（ark- 开头） */
 export const LLM_API_KEY = requireEnv('LLM_API_KEY', '')
-/** 火山引擎方舟 baseURL（OpenAI 兼容） */
+/** 火山引擎方舟 baseURL（OpenAI 兼容协议，Coding Plan 专属地址） */
 export const LLM_BASE_URL = process.env.LLM_BASE_URL
-  || 'https://ark.cn-beijing.volces.com/api/v3'
-/** 火山引擎接入点 ID（ep- 开头，在方舟控制台创建接入点后获得） */
-export const CHAT_MODEL = process.env.CHAT_MODEL || ''
+  || 'https://ark.cn-beijing.volces.com/api/coding/v3'
+/** Coding Plan 模型名（glm-5.2 / doubao-seed-2.0-lite / kimi-k2.7-code 等） */
+export const CHAT_MODEL = process.env.CHAT_MODEL || 'glm-5.2'
 
 /* ===== Embedding 模型：阿里云百炼 DashScope（不变，OpenAI 兼容协议） ===== */
 /** 百炼 API Key（sk- 开头） */

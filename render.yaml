@@ -14,13 +14,13 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      # 对话模型：火山引擎方舟（在控制台手动填，不入库）
+      # 对话模型：火山引擎 Coding Plan（OpenAI 兼容协议）
       - key: LLM_API_KEY
         sync: false
       - key: LLM_BASE_URL
-        value: https://ark.cn-beijing.volces.com/api/v3
+        value: https://ark.cn-beijing.volces.com/api/coding/v3
       - key: CHAT_MODEL
-        sync: false
+        value: glm-5.2
       # Embedding 模型：阿里云百炼
       - key: EMBEDDING_API_KEY
         sync: false
