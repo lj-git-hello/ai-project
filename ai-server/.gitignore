@@ -1,0 +1,11 @@
+# 子项目级补充忽略（根 .gitignore 已覆盖 node_modules/.env/运行时数据等）
+
+# 本地 Claude 工具配置
+.claude/
+.agents/
+CLAUDE.md
+skills-lock.json
+
+# 调试输出
+chunList.json
+a.json
