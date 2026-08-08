@@ -152,7 +152,8 @@ function cancelEdit() {
 
 <style scoped>
 .message-item {
-  @apply flex gap-3 px-4 py-5 max-w-3xl mx-auto w-full;
+  @apply flex gap-2 px-2 py-4 max-w-3xl mx-auto w-full
+    md:gap-3 md:px-4 md:py-5;
 }
 .message-item.is-user {
   @apply flex-row-reverse;

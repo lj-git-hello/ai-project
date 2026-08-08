@@ -14,6 +14,14 @@ import { groupSessions } from '@/utils/time'
 const chatStore = useChatStore()
 const settingsStore = useSettingsStore()
 
+const emit = defineEmits(['select-mobile'])
+
+/** 选中会话：切换后通知父组件（移动端收起抽屉） */
+function onSelectSession(id) {
+  chatStore.selectSession(id)
+  emit('select-mobile')
+}
+
 const showSettings = ref(false)
 const searchQuery = ref('')
 const renamingId = ref(null)
@@ -96,7 +104,7 @@ const toggleTheme = () => {
             :key="session.id"
             class="session-item group"
             :class="{ active: session.id === chatStore.activeSessionId }"
-            @click="chatStore.selectSession(session.id)"
+            @click="onSelectSession(session.id)"
             @dblclick="startRename(session)"
           >
             <div

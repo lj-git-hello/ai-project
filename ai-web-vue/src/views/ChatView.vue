@@ -6,7 +6,7 @@
  * 故通过 updateAssistantContent 全量覆盖；首字到达前展示思考态。
  */
 import { ref, nextTick, computed, onMounted, watch } from 'vue'
-import { Sparkles, MessageSquarePlus, Loader2, Code2 } from 'lucide-vue-next'
+import { Sparkles, MessageSquarePlus, Loader2, Code2, Menu } from 'lucide-vue-next'
 import { useChatStore } from '@/stores/chat'
 import { useChatStream } from '@/composables/useChatStream'
 import Sidebar from '@/components/chat/Sidebar.vue'
@@ -38,6 +38,14 @@ const chatInputRef = ref(null)
 
 /** 右侧原始记录面板是否展开（刷新后默认展开，可手动关闭） */
 const showRaw = ref(true)
+
+/** 移动端侧栏抽屉开关（md 以上始终展开，不依赖此状态） */
+const sidebarOpen = ref(false)
+
+/** 移动端：切到会话后自动收起侧栏 */
+function selectSessionMobile() {
+  sidebarOpen.value = false
+}
 
 /** 欢迎页预设提示词 */
 const suggestions = [
@@ -200,11 +208,25 @@ onMounted(async () => {
 
 <template>
   <div class="chat-layout">
-    <Sidebar />
+    <!-- 移动端遮罩：侧栏打开时点击关闭 -->
+    <div
+      v-if="sidebarOpen"
+      class="sidebar-overlay"
+      @click="sidebarOpen = false"
+    />
+
+    <!-- 侧栏：移动端为抽屉，md 以上常驻 -->
+    <div class="sidebar-wrap" :class="{ open: sidebarOpen }">
+      <Sidebar @select-mobile="selectSessionMobile" />
+    </div>
 
     <main class="chat-main">
       <!-- 顶部栏 -->
       <header class="chat-header">
+        <!-- 移动端菜单按钮 -->
+        <button class="menu-btn" title="会话列表" @click="sidebarOpen = true">
+          <Menu :size="20" />
+        </button>
         <h1 class="title">
           {{ chatStore.activeSession ? chatStore.activeSession.title : 'AI 个人助手' }}
         </h1>
@@ -290,9 +312,10 @@ onMounted(async () => {
       </footer>
     </main>
 
-    <!-- 右侧第三栏：原始记录 -->
+    <!-- 右侧第三栏：原始记录（仅 md 以上显示，移动端隐藏） -->
     <RawHistory
       v-if="showRaw && activeId"
+      class="hidden md:flex"
       :user-id="chatStore.userId"
       :session-id="activeId"
       @close="showRaw = false"
@@ -305,25 +328,48 @@ onMounted(async () => {
   @apply flex h-screen w-screen overflow-hidden;
 }
 
+/* ===== 移动端侧栏抽屉 ===== */
+.sidebar-overlay {
+  @apply fixed inset-0 z-30 bg-black/40 md:hidden;
+}
+
+.sidebar-wrap {
+  /* 移动端：固定定位抽屉，默认滑出视口外 */
+  @apply fixed left-0 top-0 z-40 h-full transition-transform duration-200 md:static md:transition-none;
+  transform: translateX(-100%);
+}
+.sidebar-wrap.open {
+  transform: translateX(0);
+}
+
+/* 移动端菜单按钮：md 以上隐藏 */
+.menu-btn {
+  @apply flex items-center justify-center w-9 h-9 rounded-lg
+    text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800
+    md:hidden;
+}
+
 .chat-main {
   @apply flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-950;
 }
 
 .chat-header {
-  @apply flex items-center justify-between px-4 h-14
+  @apply flex items-center gap-2 px-3 h-14
     border-b border-gray-200 dark:border-gray-800
-    bg-white/80 dark:bg-gray-900/80 backdrop-blur;
+    bg-white/80 dark:bg-gray-900/80 backdrop-blur
+    md:px-4;
 }
 .title {
-  @apply text-sm font-medium text-gray-700 dark:text-gray-200 truncate;
+  @apply text-sm font-medium text-gray-700 dark:text-gray-200 truncate flex-1;
 }
 .header-actions {
   @apply flex items-center gap-1;
 }
 .header-btn {
-  @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm
+  @apply inline-flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-sm
     text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800
-    transition-colors;
+    transition-colors
+    md:px-3;
 }
 .header-btn.active {
   @apply bg-brand-50 dark:bg-brand-700/20 text-brand-600 dark:text-brand-300
