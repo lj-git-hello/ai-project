@@ -178,8 +178,17 @@ async function chatTo(q, userId, sessionId, res, type = "human", files = []) {
       } catch (e) {
         console.warn(`[chatTo] 工具参数解析失败: ${tc.name} args=${tc.args}`)
       }
-      const toolResult = await targetTool.invoke(parsedArgs)
-      toolResults.push({ content: toolResult, tool_call_id: tc.id })
+      try {
+        const toolResult = await targetTool.invoke(parsedArgs)
+        toolResults.push({ content: toolResult, tool_call_id: tc.id })
+      } catch (e) {
+        // schema 不匹配 / 工具执行失败：回传错误提示，让模型修正参数重试，而非整个请求崩溃
+        console.warn(`[chatTo] 工具执行失败: ${tc.name} 错误: ${e.message}`)
+        toolResults.push({
+          content: `工具 ${tc.name} 调用失败：${e.message}。请检查参数后重试。`,
+          tool_call_id: tc.id
+        })
+      }
     }
     // 所有工具结果一次性回传（保持并行调用的语义，避免逐个递归破坏上下文）
     result = await chatTo(toolResults, userId, sessionId, res, "tool")
