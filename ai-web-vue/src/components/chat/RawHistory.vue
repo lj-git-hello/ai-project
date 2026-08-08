@@ -218,7 +218,8 @@ defineExpose({ refresh })
 
 <style scoped>
 .raw-panel {
-  @apply flex flex-col h-full w-80 flex-shrink-0
+  /* display 由外部 class 控制（hidden md:flex），不在此硬编码 */
+  @apply flex-col h-full w-80 flex-shrink-0
     border-l border-gray-200 dark:border-gray-800
     bg-gray-50 dark:bg-gray-950;
 }
