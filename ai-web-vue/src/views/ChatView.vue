@@ -1,21 +1,25 @@
 <script setup>
 /**
  * 聊天主页
- * 桌面端：左侧 Sidebar 常驻 + 右侧消息区
- * 移动端：侧栏全屏覆盖式滑出，点选会话或空白关闭
+ * 桌面端：左侧 Sidebar + 中间消息区 + 右侧原始记录（三栏）
+ * 移动端：侧栏覆盖式滑出，原始记录隐藏
  * 流式协议核心：后端每次推送的 content 是「已拼接的完整文本」，
  * 故通过 updateAssistantContent 全量覆盖；首字到达前展示思考态。
  */
 import { ref, nextTick, computed, onMounted, watch } from 'vue'
-import { Sparkles, MessageSquarePlus, Loader2, Menu } from 'lucide-vue-next'
+import { Sparkles, MessageSquarePlus, Loader2, Menu, Code2 } from 'lucide-vue-next'
 import { useChatStore } from '@/stores/chat'
 import { useChatStream } from '@/composables/useChatStream'
 import Sidebar from '@/components/chat/Sidebar.vue'
 import MessageItem from '@/components/chat/MessageItem.vue'
 import ChatInput from '@/components/chat/ChatInput.vue'
+import RawHistory from '@/components/chat/RawHistory.vue'
 
 const chatStore = useChatStore()
 const { runLLM } = useChatStream()
+
+/** 右侧原始记录面板开关（桌面端默认展开，移动端不显示） */
+const showRaw = ref(true)
 
 /** 思考态（独立于 store，避免历史会话渲染时被波及） */
 const thinking = ref(false)
@@ -228,6 +232,15 @@ onMounted(async () => {
           {{ chatStore.activeSession ? chatStore.activeSession.title : 'AI 个人助手' }}
         </h1>
         <div class="header-actions">
+          <button
+            class="header-btn hidden md:inline-flex"
+            :class="{ active: showRaw }"
+            :title="showRaw ? '收起原始记录' : '查看原始记录'"
+            @click="showRaw = !showRaw"
+          >
+            <Code2 :size="16" />
+            <span>原始记录</span>
+          </button>
           <button class="header-btn" title="新建对话" @click="newChat">
             <MessageSquarePlus :size="18" />
             <span class="hidden sm:inline">新建</span>
@@ -299,6 +312,15 @@ onMounted(async () => {
         />
       </footer>
     </main>
+
+    <!-- 右侧第三栏：原始记录（仅桌面端 md 以上显示，移动端隐藏） -->
+    <RawHistory
+      v-if="showRaw && activeId"
+      class="hidden md:flex"
+      :user-id="chatStore.userId"
+      :session-id="activeId"
+      @close="showRaw = false"
+    />
   </div>
 </template>
 
