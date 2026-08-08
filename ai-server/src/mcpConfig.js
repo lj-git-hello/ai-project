@@ -10,10 +10,10 @@ export const mcpConfig = {
   "time": {
     "transport": "http",
     "url": "https://mcpmarket.cn/mcp/67f270fe36e5587add805ea5"
-  },
-  // 网页抓取 MCP（mcpmarket.cn）：提供 fetch 工具，读取 URL 正文
-  "WebSearch": {
-    "transport": "http",
-    "url": "https://mcpmarket.cn/mcp/fbf9102459f622ed4bbdf4b8"
   }
+  // 网页抓取改用自研工具 fetch_url（功能等价，不依赖外部 MCP 会话，更稳定）
+  // "WebSearch": {
+  //   "transport": "http",
+  //   "url": "https://mcpmarket.cn/mcp/fbf9102459f622ed4bbdf4b8"
+  // }
 }
