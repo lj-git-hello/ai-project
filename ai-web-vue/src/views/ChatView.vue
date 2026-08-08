@@ -9,6 +9,7 @@
 import { ref, nextTick, computed, onMounted, watch } from 'vue'
 import { Sparkles, MessageSquarePlus, Loader2, Menu, Code2 } from 'lucide-vue-next'
 import { useChatStore } from '@/stores/chat'
+import { useSettingsStore } from '@/stores/settings'
 import { useChatStream } from '@/composables/useChatStream'
 import Sidebar from '@/components/chat/Sidebar.vue'
 import MessageItem from '@/components/chat/MessageItem.vue'
@@ -16,6 +17,7 @@ import ChatInput from '@/components/chat/ChatInput.vue'
 import RawHistory from '@/components/chat/RawHistory.vue'
 
 const chatStore = useChatStore()
+const settingsStore = useSettingsStore()
 const { runLLM } = useChatStream()
 
 /** 右侧原始记录面板开关（桌面端默认展开，移动端不显示） */
@@ -201,6 +203,8 @@ watch(activeId, () => {
 
 onMounted(async () => {
   chatStore.initStore()
+  // 从后端拉取用户角色与系统上下文设置
+  settingsStore.loadFromServer()
   // 会话列表从服务端拉取；失败时 store 内部会兜底建空会话
   await chatStore.fetchHistory()
   scrollToBottom(false)

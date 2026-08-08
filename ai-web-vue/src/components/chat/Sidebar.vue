@@ -70,6 +70,20 @@ const deleteSession = async (session) => {
 const toggleTheme = () => {
   settingsStore.toggleTheme()
 }
+
+/** 保存设置到后端 */
+const saving = ref(false)
+async function onSaveSettings() {
+  saving.value = true
+  const ok = await settingsStore.saveToServer()
+  saving.value = false
+  if (ok) {
+    // 简短提示后收起面板
+    showSettings.value = false
+  } else {
+    alert('保存失败，请检查后端服务是否正常')
+  }
+}
 </script>
 
 <template>
@@ -173,22 +187,29 @@ const toggleTheme = () => {
       class="settings-panel"
     >
       <div class="settings-item">
-        <label>API Key</label>
+        <label>角色</label>
         <input
-          type="password"
-          v-model="settingsStore.apiKey"
-          @change="settingsStore.persist()"
+          v-model="settingsStore.role"
+          placeholder="如：法律顾问、代码助手、个人助手"
         />
       </div>
 
       <div class="settings-item">
-        <label>System Prompt</label>
+        <label>系统上下文</label>
         <textarea
-          v-model="settingsStore.systemPrompt"
-          @change="settingsStore.persist()"
-          rows="3"
+          v-model="settingsStore.systemContext"
+          rows="4"
+          placeholder="追加到系统提示词后的自定义上下文，如回答风格、领域知识等"
         />
       </div>
+
+      <button
+        class="settings-save-btn"
+        :disabled="saving"
+        @click="onSaveSettings"
+      >
+        {{ saving ? '保存中…' : '保存' }}
+      </button>
     </div>
   </div>
 </template>
@@ -297,5 +318,10 @@ const toggleTheme = () => {
 .settings-item input, .settings-item textarea {
   @apply w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
     bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500;
+}
+
+.settings-save-btn {
+  @apply w-full px-4 py-2 rounded-lg bg-brand-500 text-white text-sm font-medium
+    hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
 }
 </style>

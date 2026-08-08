@@ -97,9 +97,7 @@ async function chatTo(q, userId, sessionId, res, type = "human", files = []) {
     historyMessagesKey: "history"
   })
 
-  const invokePramas = {
-    role: "聊天机器人"
-  }
+  const invokePramas = {}
   if (type === "human") {
     // 若用户上传了文件，在提问后附加文件提示，引导模型调用 read_file 读取
     let questionText = query.content
@@ -207,6 +205,21 @@ async function chatTo(q, userId, sessionId, res, type = "human", files = []) {
 // 健康检查端点（Render 部署探活用，不依赖外部服务）
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() })
+})
+
+// ===== 用户角色与系统上下文（内存存储） =====
+import { userSettings, setUserSettings } from "./userSettings.js"
+
+// 保存用户角色与系统上下文
+app.post('/settings', (req, res) => {
+  const { role, systemContext } = req.body || {}
+  setUserSettings({ role: role || '', systemContext: systemContext || '' })
+  res.json({ success: true, settings: userSettings })
+})
+
+// 获取当前用户角色与系统上下文
+app.get('/settings', (req, res) => {
+  res.json(userSettings)
 })
 
 app.get('/llm', async (req, res) => {
