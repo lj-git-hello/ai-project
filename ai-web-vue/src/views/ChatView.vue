@@ -1,18 +1,18 @@
 <script setup>
 /**
  * 聊天主页
- * 左侧 Sidebar + 右侧消息区（含欢迎页 / 消息列表 / 输入框）。
+ * 桌面端：左侧 Sidebar 常驻 + 右侧消息区
+ * 移动端：侧栏全屏覆盖式滑出，点选会话或空白关闭
  * 流式协议核心：后端每次推送的 content 是「已拼接的完整文本」，
  * 故通过 updateAssistantContent 全量覆盖；首字到达前展示思考态。
  */
 import { ref, nextTick, computed, onMounted, watch } from 'vue'
-import { Sparkles, MessageSquarePlus, Loader2, Code2, Menu } from 'lucide-vue-next'
+import { Sparkles, MessageSquarePlus, Loader2, Menu } from 'lucide-vue-next'
 import { useChatStore } from '@/stores/chat'
 import { useChatStream } from '@/composables/useChatStream'
 import Sidebar from '@/components/chat/Sidebar.vue'
 import MessageItem from '@/components/chat/MessageItem.vue'
 import ChatInput from '@/components/chat/ChatInput.vue'
-import RawHistory from '@/components/chat/RawHistory.vue'
 
 const chatStore = useChatStore()
 const { runLLM } = useChatStream()
@@ -36,14 +36,11 @@ const activeStreamingMsgId = computed(() =>
 const scrollRef = ref(null)
 const chatInputRef = ref(null)
 
-/** 右侧原始记录面板是否展开（刷新后默认展开，可手动关闭） */
-const showRaw = ref(true)
-
-/** 移动端侧栏抽屉开关（md 以上始终展开，不依赖此状态） */
+/** 移动端侧栏开关（全屏覆盖式，md 以上不依赖此状态） */
 const sidebarOpen = ref(false)
 
-/** 移动端：切到会话后自动收起侧栏 */
-function selectSessionMobile() {
+/** 移动端：切到会话后自动关闭侧栏 */
+function closeSidebarMobile() {
   sidebarOpen.value = false
 }
 
@@ -208,16 +205,16 @@ onMounted(async () => {
 
 <template>
   <div class="chat-layout">
-    <!-- 移动端遮罩：侧栏打开时点击关闭 -->
+    <!-- 移动端遮罩：半透明，点击关闭侧栏 -->
     <div
       v-if="sidebarOpen"
       class="sidebar-overlay"
       @click="sidebarOpen = false"
     />
 
-    <!-- 侧栏：移动端为抽屉，md 以上常驻 -->
+    <!-- 侧栏：移动端全屏覆盖式滑出，桌面端常驻 -->
     <div class="sidebar-wrap" :class="{ open: sidebarOpen }">
-      <Sidebar @select-mobile="selectSessionMobile" />
+      <Sidebar @select-mobile="closeSidebarMobile" />
     </div>
 
     <main class="chat-main">
@@ -231,15 +228,6 @@ onMounted(async () => {
           {{ chatStore.activeSession ? chatStore.activeSession.title : 'AI 个人助手' }}
         </h1>
         <div class="header-actions">
-          <button
-            class="header-btn"
-            :class="{ active: showRaw }"
-            :title="showRaw ? '收起原始记录' : '查看原始记录'"
-            @click="showRaw = !showRaw"
-          >
-            <Code2 :size="16" />
-            <span class="hidden lg:inline">原始记录</span>
-          </button>
           <button class="header-btn" title="新建对话" @click="newChat">
             <MessageSquarePlus :size="18" />
             <span class="hidden sm:inline">新建</span>
@@ -311,15 +299,6 @@ onMounted(async () => {
         />
       </footer>
     </main>
-
-    <!-- 右侧第三栏：原始记录（仅 md 以上显示，移动端隐藏） -->
-    <RawHistory
-      v-if="showRaw && activeId"
-      class="hidden md:flex"
-      :user-id="chatStore.userId"
-      :session-id="activeId"
-      @close="showRaw = false"
-    />
   </div>
 </template>
 
@@ -328,18 +307,39 @@ onMounted(async () => {
   @apply flex h-screen w-screen overflow-hidden;
 }
 
-/* ===== 移动端侧栏抽屉 ===== */
+/* ===== 侧栏：移动端全屏覆盖式 / 桌面端常驻 ===== */
 .sidebar-overlay {
-  @apply fixed inset-0 z-30 bg-black/40 md:hidden;
+  @apply fixed inset-0 z-30 bg-black/50 md:hidden;
 }
 
+/* 移动端（默认）：从左侧滑出，宽度 85% */
 .sidebar-wrap {
-  /* 移动端：固定定位抽屉，默认滑出视口外 */
-  @apply fixed left-0 top-0 z-40 h-full transition-transform duration-200 md:static md:transition-none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 40;
+  height: 100%;
+  width: 85%;
+  max-width: 320px;
   transform: translateX(-100%);
+  transition: transform 0.25s ease;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
 }
 .sidebar-wrap.open {
   transform: translateX(0);
+}
+
+/* 桌面端（md 以上）：恢复为正常文档流，固定宽度常驻 */
+@media (min-width: 768px) {
+  .sidebar-wrap {
+    position: static;
+    width: auto;
+    max-width: none;
+    transform: none;
+    transition: none;
+    z-index: auto;
+    box-shadow: none;
+  }
 }
 
 /* 移动端菜单按钮：md 以上隐藏 */
@@ -370,10 +370,6 @@ onMounted(async () => {
     text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800
     transition-colors
     md:px-3;
-}
-.header-btn.active {
-  @apply bg-brand-50 dark:bg-brand-700/20 text-brand-600 dark:text-brand-300
-    hover:bg-brand-100 dark:hover:bg-brand-700/30;
 }
 
 .message-list {
