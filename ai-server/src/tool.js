@@ -131,6 +131,46 @@ export const bingSearch = tool(
 )
 
 /**
+ * 时间查询工具：获取指定时区的当前时间，或进行时区换算。
+ * 自研替代原 time MCP，不依赖外部 session，零网络依赖更稳定。
+ */
+export const getCurrentTime = tool(
+  async ({ timezone }) => {
+    try {
+      const now = new Date()
+      let timeStr
+      if (timezone) {
+        // 指定时区：用 Intl 格式化
+        timeStr = new Intl.DateTimeFormat('zh-CN', {
+          timeZone: timezone,
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
+          hour12: false
+        }).format(now)
+      } else {
+        // 本地时间
+        timeStr = new Intl.DateTimeFormat('zh-CN', {
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
+          hour12: false
+        }).format(now)
+      }
+      return `当前时间（${timezone || '本地时区'}）：${timeStr}`
+    } catch (e) {
+      // 时区无效时回退本地时间
+      return `时区「${timezone}」无效，当前本地时间：${new Date().toLocaleString('zh-CN')}`
+    }
+  },
+  {
+    name: 'get_current_time',
+    description: '获取指定时区的当前时间。当用户询问"现在几点""某个城市的时间"或需要时区换算时调用。',
+    schema: z.object({
+      timezone: z.string().optional().describe("时区标识，如 Asia/Shanghai、America/New_York、America/Los_Angeles。不填则返回本地时间")
+    })
+  }
+)
+
+/**
  * 文件读取工具：读取用户上传的文档文件内容（支持 pdf/docx/xlsx/md/txt/csv）。
  * 出于安全考虑，仅允许读取 uploads 目录下的文件，路径会被规范化后做穿越校验。
  * 入参 fileName 为上传时返回的文件名（不含目录）。
@@ -172,5 +212,6 @@ export const toolMap = {
   [customCalc.name]: customCalc,
   [fetchUrl.name]: fetchUrl,
   [bingSearch.name]: bingSearch,
+  [getCurrentTime.name]: getCurrentTime,
   [readFile.name]: readFile
 }

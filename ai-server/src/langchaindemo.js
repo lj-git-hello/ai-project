@@ -50,22 +50,25 @@ const upload = multer({
   }
 })
 
-const client = new MultiServerMCPClient({
-  mcpServers: mcpConfig,
-  prefixToolNameWithServerName: true,
-  additionalToolNamePrefix: "mcp"
-})
-
-// MCP 工具加载：单个 server 失败时降级跳过，不阻塞整体启动
+// MCP 工具加载：mcpConfig 为空时跳过，单个 server 失败时降级跳过，不阻塞整体启动
 let mcpTools = []
-try {
-  mcpTools = await client.getTools()
-  console.log(`[MCP] 已加载 ${mcpTools.length} 个工具: ${mcpTools.map(t => t.name).join(', ') || '(无)'}`)
-} catch (e) {
-  console.warn(`[MCP] 部分服务连接失败，已降级跳过：${e.message?.slice(0, 120) || e}`)
-}
-for (const tool of mcpTools) {
-  toolMap[tool.name] = tool
+if (Object.keys(mcpConfig).length > 0) {
+  const client = new MultiServerMCPClient({
+    mcpServers: mcpConfig,
+    prefixToolNameWithServerName: true,
+    additionalToolNamePrefix: "mcp"
+  })
+  try {
+    mcpTools = await client.getTools()
+    console.log(`[MCP] 已加载 ${mcpTools.length} 个工具: ${mcpTools.map(t => t.name).join(', ') || '(无)'}`)
+  } catch (e) {
+    console.warn(`[MCP] 部分服务连接失败，已降级跳过：${e.message?.slice(0, 120) || e}`)
+  }
+  for (const tool of mcpTools) {
+    toolMap[tool.name] = tool
+  }
+} else {
+  console.log('[MCP] 无 MCP 服务配置，仅使用自研工具')
 }
 
 
