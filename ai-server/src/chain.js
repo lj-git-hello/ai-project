@@ -75,7 +75,7 @@ export function userChatChain(extraTool, type = "human") {
     configuration: {
       baseURL: LLM_BASE_URL
     },
-    maxTokens: 2048
+    maxTokens: 8192
   })
   const modelWithTool = model.bindTools([...builtinTools, ...extraTool])
 
@@ -111,7 +111,7 @@ export function ragChatChain(extraTool, type = "human") {
     configuration: {
       baseURL: LLM_BASE_URL
     },
-    maxTokens: 2048
+    maxTokens: 8192
   })
   const modelWithTool = model.bindTools([...builtinTools, ...extraTool])
 
