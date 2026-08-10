@@ -1,6 +1,6 @@
 import { Annotation, StateGraph, MessagesAnnotation } from "@langchain/langgraph";
 import { OpenAI, ChatOpenAI } from "@langchain/openai";
-import { customCalc } from "./tool.js";
+import { fetchUrl, bingSearch, getCurrentTime, readFile } from "./tool.js";
 import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { mapChatMessagesToStoredMessages } from "@langchain/core/messages";
 import { FileSystemSaver } from "./class/FileSystemSaver.js";
@@ -13,7 +13,7 @@ const model = new ChatOpenAI({
     baseURL: LLM_BASE_URL
   }
 })
-const tools = [customCalc]
+const tools = [fetchUrl, bingSearch, getCurrentTime, readFile]
 const modelWithTool = model.bindTools(tools)
 
 // 自定义数据处理策略

@@ -2,7 +2,7 @@ import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { ChatPromptTemplate, MessagesPlaceholder } from "@langchain/core/prompts";
 import { ChatOpenAI } from "@langchain/openai";
-import { customCalc, fetchUrl, bingSearch, getCurrentTime, readFile } from "./tool.js";
+import { fetchUrl, bingSearch, getCurrentTime, readFile } from "./tool.js";
 import { LLM_API_KEY, LLM_BASE_URL, CHAT_MODEL } from "./config.js";
 import { userSettings } from "./userSettings.js";
 import fs from "fs";
@@ -10,7 +10,7 @@ import { fileURLToPath } from "url";
 import { dirname, resolve } from "path";
 
 /** 自研工具集合：随每次对话注入，与 MCP 工具(extraTool)合并后绑定到模型 */
-const builtinTools = [customCalc, fetchUrl, bingSearch, getCurrentTime, readFile]
+const builtinTools = [fetchUrl, bingSearch, getCurrentTime, readFile]
 
 /**
  * 读取 system prompt 模版文件（src/context/systemContext.md）。
