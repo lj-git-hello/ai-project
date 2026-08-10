@@ -52,10 +52,10 @@ function closeSidebarMobile() {
 
 /** 欢迎页预设提示词（覆盖核心能力，便于面试演示） */
 const suggestions = [
-  '搜索一下最近 AI 大模型的最新进展',   // 演示联网搜索 bing_search
-  '上传文件后帮我总结要点',                // 演示文件读取 read_file
-  '用通俗语言解释什么是 RAG',             // 演示知识库回答
-  '查一下美国洛杉矶现在几点'               // 演示时间工具调用
+  '🔍 联网搜索：帮我搜索最新的 AI 架构创新并总结亮点',
+  '📄 知识库检索 (RAG)：总结上传文档中关于公司的基本介绍',
+  '🛠️ 多工具协同：对比“北京”和“上海”今天的天气并给出出行建议',
+  '⚙️ MCP 服务调用：通过 MCP 协议获取本地/远程系统运行状态'
 ]
 
 /** 滚动到底部 */
@@ -214,11 +214,7 @@ onMounted(async () => {
 <template>
   <div class="chat-layout">
     <!-- 移动端遮罩：半透明，点击关闭侧栏 -->
-    <div
-      v-if="sidebarOpen"
-      class="sidebar-overlay"
-      @click="sidebarOpen = false"
-    />
+    <div v-if="sidebarOpen" class="sidebar-overlay" @click="sidebarOpen = false" />
 
     <!-- 侧栏：移动端全屏覆盖式滑出，桌面端常驻 -->
     <div class="sidebar-wrap" :class="{ open: sidebarOpen }">
@@ -236,12 +232,8 @@ onMounted(async () => {
           {{ chatStore.activeSession ? chatStore.activeSession.title : 'AI 个人助手' }}
         </h1>
         <div class="header-actions">
-          <button
-            class="header-btn hidden md:inline-flex"
-            :class="{ active: showRaw }"
-            :title="showRaw ? '收起原始记录' : '查看原始记录'"
-            @click="showRaw = !showRaw"
-          >
+          <button class="header-btn hidden md:inline-flex" :class="{ active: showRaw }"
+            :title="showRaw ? '收起原始记录' : '查看原始记录'" @click="showRaw = !showRaw">
             <Code2 :size="16" />
             <span>原始记录</span>
           </button>
@@ -253,12 +245,8 @@ onMounted(async () => {
       </header>
 
       <!-- 消息区 -->
-      <div
-        ref="scrollRef"
-        class="message-list scrollbar-thin"
-        :class="{ 'has-messages': hasMessages }"
-        @scroll="onScroll"
-      >
+      <div ref="scrollRef" class="message-list scrollbar-thin" :class="{ 'has-messages': hasMessages }"
+        @scroll="onScroll">
         <!-- 加载中 -->
         <div v-if="chatStore.loading && !hasMessages" class="state-tip">
           <Loader2 :size="22" class="spin" />
@@ -274,12 +262,7 @@ onMounted(async () => {
           <p class="welcome-desc">有什么可以帮你的？试着问点什么吧。</p>
 
           <div class="suggest-grid">
-            <button
-              v-for="s in suggestions"
-              :key="s"
-              class="suggest-card"
-              @click="sendMessage(s)"
-            >
+            <button v-for="s in suggestions" :key="s" class="suggest-card" @click="sendMessage(s)">
               {{ s }}
             </button>
           </div>
@@ -287,44 +270,27 @@ onMounted(async () => {
 
         <!-- 消息列表 -->
         <template v-else>
-          <MessageItem
-            v-for="msg in messages"
-            :key="msg.id"
-            :message="msg"
-            :streaming="msg.id === activeStreamingMsgId"
-            @retry="handleRetry"
-            @edit="(text) => handleEdit(msg, text)"
-          />
+          <MessageItem v-for="msg in messages" :key="msg.id" :message="msg" :streaming="msg.id === activeStreamingMsgId"
+            @retry="handleRetry" @edit="(text) => handleEdit(msg, text)" />
 
           <!-- 思考中（assistant 占位未显示时，底部额外提示） -->
           <div v-if="thinking && !activeStreamingMsgId" class="bottom-thinking">
-            <MessageItem
-              :message="{ id: 'thinking', role: 'assistant', content: '', status: 'streaming' }"
-              :streaming="true"
-            />
+            <MessageItem :message="{ id: 'thinking', role: 'assistant', content: '', status: 'streaming' }"
+              :streaming="true" />
           </div>
         </template>
       </div>
 
       <!-- 输入区 -->
       <footer class="chat-footer">
-        <ChatInput
-          ref="chatInputRef"
-          :loading="chatStore.isStreaming"
-          @send="({ text, files }) => sendMessage(text, { files })"
-          @stop="stopGenerate"
-        />
+        <ChatInput ref="chatInputRef" :loading="chatStore.isStreaming"
+          @send="({ text, files }) => sendMessage(text, { files })" @stop="stopGenerate" />
       </footer>
     </main>
 
     <!-- 右侧第三栏：原始记录（仅桌面端 md 以上显示，移动端隐藏） -->
-    <RawHistory
-      v-if="showRaw && activeId"
-      class="hidden md:flex"
-      :user-id="chatStore.userId"
-      :session-id="activeId"
-      @close="showRaw = false"
-    />
+    <RawHistory v-if="showRaw && activeId" class="hidden md:flex" :user-id="chatStore.userId" :session-id="activeId"
+      @close="showRaw = false" />
   </div>
 </template>
 
@@ -351,6 +317,7 @@ onMounted(async () => {
   transition: transform 0.25s ease;
   box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
 }
+
 .sidebar-wrap.open {
   transform: translateX(0);
 }
@@ -370,9 +337,7 @@ onMounted(async () => {
 
 /* 移动端菜单按钮：md 以上隐藏 */
 .menu-btn {
-  @apply flex items-center justify-center w-9 h-9 rounded-lg
-    text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800
-    md:hidden;
+  @apply flex items-center justify-center w-9 h-9 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden;
 }
 
 .chat-main {
@@ -380,39 +345,38 @@ onMounted(async () => {
 }
 
 .chat-header {
-  @apply flex items-center gap-2 px-3 h-14
-    border-b border-gray-200 dark:border-gray-800
-    bg-white/80 dark:bg-gray-900/80 backdrop-blur
-    md:px-4;
+  @apply flex items-center gap-2 px-3 h-14 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur md:px-4;
 }
+
 .title {
   @apply text-sm font-medium text-gray-700 dark:text-gray-200 truncate flex-1;
 }
+
 .header-actions {
   @apply flex items-center gap-1;
 }
+
 .header-btn {
-  @apply inline-flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-sm
-    text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800
-    transition-colors
-    md:px-3;
+  @apply inline-flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors md:px-3;
 }
 
 .message-list {
   @apply flex-1 overflow-y-auto;
 }
+
 .message-list.has-messages {
   @apply py-4;
 }
 
 /* 加载/状态提示 */
 .state-tip {
-  @apply h-full flex flex-col items-center justify-center gap-2
-    text-gray-400 dark:text-gray-500;
+  @apply h-full flex flex-col items-center justify-center gap-2 text-gray-400 dark:text-gray-500;
 }
+
 .spin {
   animation: spin 1s linear infinite;
 }
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -423,31 +387,29 @@ onMounted(async () => {
 .welcome {
   @apply h-full flex flex-col items-center justify-center px-6 text-center;
 }
+
 .welcome-icon {
-  @apply flex items-center justify-center w-20 h-20 rounded-2xl mb-6
-    text-white bg-gradient-to-br from-brand-400 to-brand-600 shadow-lg;
+  @apply flex items-center justify-center w-20 h-20 rounded-2xl mb-6 text-white bg-gradient-to-br from-brand-400 to-brand-600 shadow-lg;
 }
+
 .welcome-title {
-  @apply text-3xl font-bold mb-2
-    text-gray-800 dark:text-gray-100;
+  @apply text-3xl font-bold mb-2 text-gray-800 dark:text-gray-100;
 }
+
 .welcome-desc {
   @apply text-gray-500 dark:text-gray-400 mb-8;
 }
+
 .suggest-grid {
   @apply grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-xl;
 }
+
 .suggest-card {
-  @apply px-4 py-3 text-left text-sm rounded-xl
-    bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
-    text-gray-600 dark:text-gray-300
-    hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-400
-    hover:shadow-sm transition-all cursor-pointer;
+  @apply px-4 py-3 text-left text-sm rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-400 hover:shadow-sm transition-all cursor-pointer;
 }
 
 .chat-footer {
-  @apply border-t border-gray-200 dark:border-gray-800
-    bg-white/80 dark:bg-gray-900/80 backdrop-blur;
+  @apply border-t border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur;
 }
 
 .bottom-thinking {

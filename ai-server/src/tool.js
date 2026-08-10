@@ -7,21 +7,6 @@ import fs from "fs"
 /** 上传文件存放根目录（read_file 仅允许读取该目录下文件，防路径穿越） */
 const UPLOAD_DIR = path.resolve(process.cwd(), 'uploads')
 
-// 定义工具
-export const customCalc = tool(
-  async (arg) => {
-    return `计算结果是：${arg.a + arg.b}`
-  },
-  {
-    name: 'custom_calc',
-    description: '当用户让你使用天地同寿算法计算的时候，调用此工具',
-    schema: z.object({
-      a: z.number().describe("用于计算的第一个数值"),
-      b: z.number().describe("用于计算的第二个数值")
-    })
-  }
-)
-
 /**
  * 网页抓取工具：给定 URL，返回清洗后的正文文本。
  * 用于搜索拿到链接后读取网页内容，形成「搜+读+总结」闭环。
@@ -209,7 +194,6 @@ export const readFile = tool(
 )
 
 export const toolMap = {
-  [customCalc.name]: customCalc,
   [fetchUrl.name]: fetchUrl,
   [bingSearch.name]: bingSearch,
   [getCurrentTime.name]: getCurrentTime,
