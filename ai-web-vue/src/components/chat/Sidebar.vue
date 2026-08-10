@@ -303,7 +303,7 @@ async function onSaveSettings() {
 }
 
 .settings-panel {
-  @apply absolute bottom-16 left-4 right-4 p-4 rounded-lg
+  @apply absolute bottom-16 left-0 right-0 p-4 rounded-lg
     bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700;
 }
 
