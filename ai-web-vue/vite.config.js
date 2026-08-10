@@ -9,8 +9,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 // base：GitHub Pages 部署在子路径下需配置；开发/自定义域名部署用 '/'
 //   用法：仓库根部署留空 ''，项目页用 '/仓库名/'
 export default defineConfig({
-  // GitHub Pages 部署时改为 '/你的仓库名/'，本地开发或自定义域名用 '/'
-  base: '/ai-project/',
+  base: '/',
   plugins: [
     vue(),
     // 按需自动引入 Vue Composition API
