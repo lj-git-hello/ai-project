@@ -11,8 +11,9 @@ export const mcpConfig = {
   //   "transport": "http",
   //   "url": "https://mcpmarket.cn/mcp/67f270fe36e5587add805ea5"
   // }
-  "bing_search": {
-    "transport": "http",
-    "url": "https://mcpmarket.cn/mcp/f5a77cdf63dd4b3759d6b839"
-  }
+  // "bing_search": {
+  //   "transport": "http",
+  //   "url": "https://mcpmarket.cn/mcp/f5a77cdf63dd4b3759d6b839"
+  // }
+  // 阿里云 ECS 访问 mcpmarket.cn 不稳定，已注释；搜索改用自研 bing_search（直连 cn.bing.com）
 }
