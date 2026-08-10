@@ -6,8 +6,7 @@ import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vitejs.dev/config/
-// base：GitHub Pages 部署在子路径下需配置；开发/自定义域名部署用 '/'
-//   用法：仓库根部署留空 ''，项目页用 '/仓库名/'
+// base：阿里云服务器同域部署，根路径用 '/'
 export default defineConfig({
   base: '/',
   plugins: [
