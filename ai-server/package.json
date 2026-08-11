@@ -1,5 +1,5 @@
 {
-  "name": "ai-study",
+  "name": "ai-server",
   "version": "1.0.0",
   "description": "AI 个人助手后端服务",
   "type": "module",
