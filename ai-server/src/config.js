@@ -31,17 +31,17 @@ export const LLM_API_KEY = requireEnv('LLM_API_KEY', '')
 /** 火山引擎方舟 baseURL（OpenAI 兼容协议，Coding Plan 专属地址） */
 export const LLM_BASE_URL = process.env.LLM_BASE_URL
   || 'https://ark.cn-beijing.volces.com/api/coding/v3'
-/** Coding Plan 模型名（glm-5.2 / doubao-seed-2.0-lite / kimi-k2.7-code 等） */
-export const CHAT_MODEL = process.env.CHAT_MODEL || 'glm-5.2'
+/** Coding Plan 模型名（glm-5.3 / doubao-seed-2.0-lite / kimi-k2.7-code 等） */
+export const CHAT_MODEL = process.env.CHAT_MODEL || 'glm-5.3'
 
-/* ===== Embedding 模型：阿里云百炼 DashScope（不变，OpenAI 兼容协议） ===== */
-/** 百炼 API Key（sk- 开头） */
+/* ===== Embedding 模型：火山引擎方舟（与对话模型同一 Coding 端点/Key） ===== */
+/** 火山引擎 API Key（ark- 开头） */
 export const EMBEDDING_API_KEY = requireEnv('EMBEDDING_API_KEY', '')
-/** 百炼 baseURL */
+/** 火山引擎方舟 baseURL（OpenAI 兼容协议，Coding Plan 专属地址） */
 export const EMBEDDING_BASE_URL = process.env.EMBEDDING_BASE_URL
-  || 'https://ws-lni3s5bm8fy9o869.cn-beijing.maas.aliyuncs.com/compatible-mode/v1'
-/** 百炼 embedding 模型名 */
-export const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || 'qwen3.7-text-embedding'
+  || 'https://ark.cn-beijing.volces.com/api/coding/v3'
+/** 方舟 embedding 模型名（doubao-embedding-vision，支持 dimensions=1024） */
+export const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || 'doubao-embedding-vision'
 /** Embedding 维度 */
 export const EMBEDDING_DIMENSIONS = Number(process.env.EMBEDDING_DIMENSIONS) || 1024
 

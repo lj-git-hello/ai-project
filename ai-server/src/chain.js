@@ -75,9 +75,9 @@ export function userChatChain(extraTool, type = "human") {
     configuration: {
       baseURL: LLM_BASE_URL
     },
-    maxTokens: 8192,
-    // 关闭 glm-5.2 的 reasoning（思考链），直接输出正式回答
-    modelKwargs: { thinking: { type: "disabled" } }
+    maxTokens: 8192
+    // glm-5.3 不支持关闭思考链（thinking.type: disabled 会报 400）；
+    // 思考内容在独立的 reasoning_content 字段中，不会混入 chunk.content，前端输出不受影响
   })
   const modelWithTool = model.bindTools([...builtinTools, ...extraTool])
 
@@ -113,9 +113,9 @@ export function ragChatChain(extraTool, type = "human") {
     configuration: {
       baseURL: LLM_BASE_URL
     },
-    maxTokens: 8192,
-    // 关闭 glm-5.2 的 reasoning（思考链），直接输出正式回答
-    modelKwargs: { thinking: { type: "disabled" } }
+    maxTokens: 8192
+    // glm-5.3 不支持关闭思考链（thinking.type: disabled 会报 400）；
+    // 思考内容在独立的 reasoning_content 字段中，不会混入 chunk.content，前端输出不受影响
   })
   const modelWithTool = model.bindTools([...builtinTools, ...extraTool])
 

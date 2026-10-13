@@ -113,7 +113,13 @@ async function chatTo(q, userId, sessionId, res, type = "human", files = []) {
     invokePramas.question = questionText
 
     // RAG 检索：把最相关的文档片段注入 context
-    const docs = await searchDocs(q)
+    // 降级处理：embedding 服务异常时跳过 RAG 上下文，保证对话不中断
+    let docs = []
+    try {
+      docs = await searchDocs(q)
+    } catch (e) {
+      console.warn(`[chatTo] RAG 检索失败，已跳过参考资料: ${e.message}`)
+    }
     invokePramas.context = docs.length > 0
       ? docs.map(d => d.pageContent).join('\n\n---\n\n')
       : "无相关参考资料"

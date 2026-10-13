@@ -13,11 +13,15 @@ const __dirname = dirname(__filename)
 // 项目根目录 = src/rag/ 往上跳两级
 const PROJECT_ROOT = `${__dirname}/../../`
 
-// Embedding 模型配置（百炼 DashScope，集中读取环境变量）
+// 火山方舟 Embeddings 接口单次最多接受 10 条输入（超出报 400 input limit exceeded）
+const EMBEDDING_BATCH_SIZE = 10
+
+// Embedding 模型配置（火山引擎方舟，集中读取环境变量）
 const embeddingModel = new OpenAIEmbeddings({
   model: EMBEDDING_MODEL,
   apiKey: EMBEDDING_API_KEY,
   dimensions: EMBEDDING_DIMENSIONS,
+  batchSize: EMBEDDING_BATCH_SIZE,
   configuration: {
     baseURL: EMBEDDING_BASE_URL
   }
